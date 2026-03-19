@@ -13,9 +13,17 @@ SELECT
     r.month_number,
     c.cohort_size,
     r.retained_users,
-    ROUND(1.0 * r.retained_users / NULLIF(c.cohort_size, 0), 4) AS retention_rate,
-    ROUND(100.0 * r.retained_users / NULLIF(c.cohort_size, 0), 2) AS retention_percentage
+    ROUND(
+        1.0 * r.retained_users / NULLIF(c.cohort_size, 0),
+        4
+    ) AS retention_rate,
+    ROUND(
+        100.0 * r.retained_users / NULLIF(c.cohort_size, 0),
+        2
+    ) AS retention_percentage
 FROM mart_retention_monthly AS r
-LEFT JOIN cohort_sizes AS c
+INNER JOIN cohort_sizes AS c
     ON r.cohort_month = c.cohort_month
-ORDER BY r.cohort_month, r.month_number;
+ORDER BY
+    r.cohort_month,
+    r.month_number;

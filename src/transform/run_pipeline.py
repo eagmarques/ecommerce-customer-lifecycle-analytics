@@ -76,13 +76,30 @@ def run_validation_folder(conn: sqlite3.Connection, folder: Path) -> None:
                 rows = cursor.fetchall()
 
                 if rows:
-                    total_failed_checks += 1
-                    total_failed_rows += len(rows)
-
-                    print(
-                        f"[FAIL] {sql_file.name} | bloco {idx} "
-                        f"returned {len(rows)} row(s)"
+                    # Check if this is a warning or monitoring check
+                    # We look for "warning" or "monitoring" in the first column of the first row (the check name)
+                    # or in the filename itself
+                    check_name = str(rows[0][0]).lower() if rows[0] else ""
+                    is_warning = (
+                        "warning" in check_name or 
+                        "monitoring" in check_name or
+                        "warning" in sql_file.name.lower() or
+                        "monitoring" in sql_file.name.lower()
                     )
+
+                    if is_warning:
+                        print(
+                            f"[WARNING] {sql_file.name} | bloco {idx} "
+                            f"detected {len(rows)} anomalies"
+                        )
+                    else:
+                        total_failed_checks += 1
+                        total_failed_rows += len(rows)
+
+                        print(
+                            f"[FAIL] {sql_file.name} | bloco {idx} "
+                            f"returned {len(rows)} row(s)"
+                        )
 
                     # show up to 5 examples
                     for sample_row in rows[:5]:

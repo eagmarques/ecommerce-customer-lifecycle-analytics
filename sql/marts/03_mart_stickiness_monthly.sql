@@ -3,13 +3,13 @@ DROP TABLE IF EXISTS mart_stickiness_monthly;
 CREATE TABLE mart_stickiness_monthly AS
 WITH daily_monthly_agg AS (
     SELECT
-        strftime('%Y-%m-01', activity_date) AS month_date,
+        STRFTIME('%Y-%m-01', activity_date) AS month_date,
         ROUND(AVG(dau), 2) AS avg_dau,
         MAX(dau) AS max_dau,
         MIN(dau) AS min_dau,
-        COUNT(activity_date) AS active_days_in_month
+        COUNT(*) AS active_days_in_month
     FROM mart_kpis_daily
-    GROUP BY month_date
+    GROUP BY STRFTIME('%Y-%m-01', activity_date)
 )
 SELECT
     d.month_date,
