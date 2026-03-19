@@ -208,7 +208,18 @@ SELECT
 FROM int_user_first_activity
 WHERE first_activity_date IS NOT NULL
   AND cohort_month IS NOT NULL
-  AND cohort_month <> STRFTIME('%Y-%m-01', first_activity_date);
+  AND cohort_month <> DATE(first_activity_date, 'start of month');
+
+-- 17.1) Cohort month label mismatch
+SELECT
+    'cohort_month_label_mismatch' AS validation_check,
+    user_id,
+    first_activity_date,
+    cohort_month_label
+FROM int_user_first_activity
+WHERE first_activity_date IS NOT NULL
+  AND cohort_month_label IS NOT NULL
+  AND cohort_month_label <> STRFTIME('%Y-%m', first_activity_date);
 
 -- 18) Negative month number retention
 SELECT

@@ -135,13 +135,15 @@ were treated as **proxies**, using distinct events, sessions, and days.
 .
 ├── data/raw/
 ├── sql/
-│ ├── staging/
-│ ├── intermediate/
-│ └── marts/
+│   ├── staging/
+│   ├── intermediate/
+│   ├── marts/
+│   └── validation/
 ├── src/
-│ ├── ingestion/
-│ └── transform/
+│   ├── ingestion/
+│   └── transform/
 ├── dashboards/
+│   └── commerce_product_analytics_dashboard.pbix
 └── docs/
 
 ---
@@ -155,7 +157,9 @@ python src/ingestion/download_kaggle_dataset.py
 python src/ingestion/load_raw_to_sqlite.py
 ```
 
-### 2. Run SQL Pipeline
+### 2. Run SQL Pipeline & Validations
+
+The pipeline script automatically executes all transformations (staging → intermediate → marts) and then runs the data validation suite to ensure metric integrity.
 
 ```bash
 python src/transform/run_pipeline.py
@@ -163,7 +167,17 @@ python src/transform/run_pipeline.py
 
 ### 3. View Dashboards in Power BI
 
-Open the `.pbix` file in the `dashboards/` folder and connect to the SQLite database.
+Open the `commerce_product_analytics_dashboard.pbix` file in the `dashboards/` folder and connect to the SQLite database.
+
+---
+
+## ✅ Data Validation
+
+The project features a robust validation layer to ensure data quality and metric consistency:
+
+- **Pipeline Validations**: 25+ automated checks for duplicates, nulls, negative values, and logical inconsistencies (e.g., retention > 100%).
+- **Monitoring Checks**: Identifies business anomalies like unusual purchase price patterns or spikes in activity.
+- **Automated Enforcement**: The `run_pipeline.py` will fail and provide detailed error logs if critical validation rules are violated.
 
 ---
 
